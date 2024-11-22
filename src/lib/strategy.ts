@@ -1,9 +1,8 @@
 import {
 	type AppLoadContext,
 	type SessionStorage,
-	json,
 	redirect,
-} from "@remix-run/server-runtime";
+} from "react-router";
 import { AuthorizationError } from "./error.js";
 
 /**
@@ -123,7 +122,7 @@ export abstract class Strategy<User, VerifyOptions> {
 		// if a failureRedirect is not set, we throw a 401 Response or an error
 		if (!options.failureRedirect) {
 			if (options.throwOnError) throw new AuthorizationError(message, cause);
-			throw json<{ message: string }>({ message }, 401);
+			// throw json<{ message: string }>({ message }, 401);
 		}
 
 		let session = await sessionStorage.getSession(
@@ -133,7 +132,7 @@ export abstract class Strategy<User, VerifyOptions> {
 		// if we do have a failureRedirect, we redirect to it and set the error
 		// in the session errorKey
 		session.flash(options.sessionErrorKey, { message });
-		throw redirect(options.failureRedirect, {
+		throw redirect(options.failureRedirect!, {
 			headers: { "Set-Cookie": await sessionStorage.commitSession(session) },
 		});
 	}
